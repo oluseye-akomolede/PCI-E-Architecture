@@ -33,9 +33,19 @@ program automatic stripe_test
     
     stripe_environment env;
     initial begin
-        env = new(rx,rx,num_lanes);
+        //env = new(rx,rx,num_lanes);
+        stripe_env_config s_cfg;
+        env = stripe_environment::type_id::create("stripe_environment",null);
+        env.set_override();
+        env.init(num_lanes);
+        
+        $cast(s_cfg,env.cfg);
+        s_cfg.rx = rx;
+        s_cfg.tx = rx;
+        $cast(env.cfg,s_cfg);
+        env.set_configs();
         env.gen_cfg();
-        env.build();
+        env.build_phase();
         env.run();
         env.wrap_up();
     end

@@ -58,16 +58,6 @@ package pcie_pkg;
     }t_state;
 
 
-    //Utility functions---------------------------------------------------------------------------
-    `define SV_RAND_CHECK(r) \
-        do begin \
-            if(!(r)) begin \
-                $display("%s:%0d: Randomization failed \"%s\"",\
-                            `__FILE__, `__LINE__, `"r`"); \
-                $finish; \
-            end \
-        end while(0)
-        
-    //end utility functions-----------------------------------------------------------------------
+
 
 endpackage: pcie_pkg
