@@ -26,7 +26,8 @@ program automatic stripe_test
         parameter num_lanes = 4
     )
     (
-        striper_ifc.TB rx,
+        i_striper_ifc.TB rx,
+        o_striper_ifc.TB tx,
         input logic i_rst
     );
     
@@ -41,7 +42,7 @@ program automatic stripe_test
         
         $cast(s_cfg,env.cfg);
         s_cfg.rx = rx;
-        s_cfg.tx = rx;
+        s_cfg.tx = tx;
         $cast(env.cfg,s_cfg);
         env.set_configs();
         env.gen_cfg();

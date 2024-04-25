@@ -21,7 +21,7 @@
 
 import pcie_pkg::*;
 import tb_base_pkg::*;
-interface striper_ifc
+interface i_striper_ifc
 #(
     parameter num_lanes = 4
 )
@@ -36,13 +36,13 @@ interface striper_ifc
     
     modport DUT
     (
-        output o_stripe_lane,
+        //output o_stripe_lane,
         input i_mu, i_d_k_vals, i_clk, i_rst
         
     );
     
     clocking cbr @(posedge i_clk);
-        input o_stripe_lane;
+        //input o_stripe_lane;
         output i_mu, i_d_k_vals;
     endclocking: cbr
     
@@ -51,13 +51,48 @@ interface striper_ifc
         clocking cbr
     );
     
-endinterface: striper_ifc
+endinterface: i_striper_ifc
+
+interface o_striper_ifc
+#(
+    parameter num_lanes = 4
+)
+(
+    input logic i_clk,
+    input logic i_rst
+);
+
+    mux_union [0:num_lanes/4 - 1] i_mu;
+    logic [0:num_lanes - 1] i_d_k_vals;
+    stripe_record [0:num_lanes - 1] o_stripe_lane;
+    
+    modport DUT
+    (
+        output o_stripe_lane
+        //input i_mu, i_d_k_vals, i_clk, i_rst
+        
+    );
+    
+    clocking cbr @(posedge i_clk);
+        input o_stripe_lane;
+        //output i_mu, i_d_k_vals;
+    endclocking: cbr
+    
+    modport TB
+    (
+        clocking cbr
+    );
+    
+endinterface: o_striper_ifc
 
 package striper_pkg;
     import pcie_pkg::*;
     import tb_base_pkg::*;
-    typedef virtual striper_ifc v_stripe_ifc;
-    typedef virtual striper_ifc.TB v_stripe_ifct;
+    typedef virtual i_striper_ifc i_v_stripe_ifc;
+    typedef virtual i_striper_ifc.TB i_v_stripe_ifct;
+    
+    typedef virtual o_striper_ifc o_v_stripe_ifc;
+    typedef virtual o_striper_ifc.TB o_v_stripe_ifct;
     
    
     
@@ -245,8 +280,8 @@ package striper_pkg;
     //Config Class and all definitions. Config sets up environment parameters are randomizes them.------
     class stripe_env_config extends svm_env_config;
         `svm_config_utils(stripe_env_config);
-        static virtual striper_ifc.TB rx;
-        static virtual striper_ifc.TB tx;
+        static virtual i_striper_ifc.TB rx;
+        static virtual o_striper_ifc.TB tx;
         
         extern function new();
         extern virtual function void display(input string prefix = "");
@@ -283,7 +318,7 @@ package striper_pkg;
     
     class stripe_driver_config extends svm_driver_config;
        `svm_config_utils(stripe_driver_config);
-       static v_stripe_ifct rx; //virtual ifc for transmitting operands
+       static i_v_stripe_ifct rx; //virtual ifc for transmitting operands
     endclass: stripe_driver_config
     
     class stripe_driver extends svm_driver;     
@@ -378,7 +413,7 @@ package striper_pkg;
     
     class stripe_monitor_config extends svm_monitor_config;
         `svm_config_utils(stripe_monitor_config);
-        static v_stripe_ifct tx;
+        static o_v_stripe_ifct tx;
     endclass: stripe_monitor_config
     
     class stripe_monitor extends svm_monitor;

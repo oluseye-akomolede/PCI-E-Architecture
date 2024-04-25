@@ -38,9 +38,10 @@ module top_stripe_test(
         
     end
     
-    striper_ifc #(.num_lanes(lp_num_lanes)) rx(clk,rst);
-    byte_striper #(.num_lanes(lp_num_lanes)) bs(rx);
-    stripe_test #(.num_lanes(lp_num_lanes)) t1(rx,rst);
+    i_striper_ifc #(.num_lanes(lp_num_lanes)) rx(clk,rst);
+    o_striper_ifc #(.num_lanes(lp_num_lanes)) tx(clk,rst);
+    byte_striper #(.num_lanes(lp_num_lanes)) bs(rx,tx);
+    stripe_test #(.num_lanes(lp_num_lanes)) t1(rx,tx,rst);
         
 
     
